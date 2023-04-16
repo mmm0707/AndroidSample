@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -17,60 +19,45 @@ import com.example.myapplication.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
+import android.widget.EditText;
 
-public class MainActivity extends AppCompatActivity {
+import java.time.Year;
+import java.util.Locale;
 
-    private AppBarConfiguration appBarConfiguration;
-    private ActivityMainBinding binding;
+public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+
+//    private AppBarConfiguration appBarConfiguration;
+//    private ActivityMainBinding binding;
+
+    private EditText datePickerEditText;
+    private DatePickerDialog.OnDateSetListener listener;
 
     @Override
+    //①最初に呼ばれる
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.toolbar);
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-        binding.fab.setOnClickListener(new View.OnClickListener() {
+        datePickerEditText.findViewById(R.id.datePickerEditText);
+        datePickerEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                showDatePickerDialog();
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    //※　onDateSet:ユーザが選択した日付で何かする
+    public void onDateSet (DatePicker datepicker,int year, int month, int day){
+        String dateStr = String.format(Locale.JAPAN,  year + "/" + month + "/" + day);
+        datePickerEditText.setText(dateStr);
+    };
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void showDatePickerDialog (View v){
+        DialogFragment  datePickerDialog = new DialogFragment();
+        datePickerDialog.show(getSupportFragmentManager(), "sampleDatePickerDialog");
+    };
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-}
+};
